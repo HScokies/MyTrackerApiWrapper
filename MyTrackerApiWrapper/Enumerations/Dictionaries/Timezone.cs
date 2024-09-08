@@ -1,6 +1,6 @@
 ﻿using MyTrackerApiWrapper.Attributes;
 
-namespace MyTrackerApiWrapper.Dictionaries;
+namespace MyTrackerApiWrapper.Enumerations.Dictionaries;
 
 public enum Timezone
 {

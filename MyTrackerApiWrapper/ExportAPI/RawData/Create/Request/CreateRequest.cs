@@ -1,19 +1,100 @@
-﻿using MyTrackerApiWrapper.Attributes;
+﻿using System;
+using System.Collections.Generic;
+using MyTrackerApiWrapper.Attributes;
 using MyTrackerApiWrapper.DataTypes;
-using MyTrackerApiWrapper.Dictionaries;
+using MyTrackerApiWrapper.Enumerations.Dictionaries;
+using MyTrackerApiWrapper.ExportAPI.RawData.Create.Request.EventTypes;
+using MyTrackerApiWrapper.Helpers;
 
-namespace MyTrackerApiWrapper.ExportAPI.RawData.Requests;
+namespace MyTrackerApiWrapper.ExportAPI.RawData.Create.Request;
 
-public sealed class CreateRequest
+public class CreateRequest<TSelector> : RequestBase where TSelector : Enum
 {
-    private static string Path => "/raw/v1/export/create.json";
+    private string Path => "/api/raw/v1/export/create.json";
+
+    // todo: remove - internal
+    public string GetPath() => Path;
     
+    private CreateRequest(CreateEventBase<TSelector> eventType)
+    {
+        ExportInformation = eventType;
+    }
+
+    public CreateRequest(
+        CreateEventBase<TSelector> eventType,
+        DateOnly dateFrom,
+        DateOnly dateTo
+    ) : this(eventType)
+    {
+        Guard.ValidDatesInterval(dateFrom, dateTo);
+        
+        DateFrom = dateFrom;
+        DateTo = dateTo;
+    }
+
+    public CreateRequest(
+        CreateEventBase<TSelector> eventType,
+        DateTime timestampFrom,
+        DateTime timestampTo
+    ) : this(eventType)
+    {
+        Guard.ValidTimestampsInterval(timestampFrom, timestampTo);
+        TimestampFrom = new UnixTimestamp(timestampFrom);
+        TimestampTo = new UnixTimestamp(timestampTo);
+    }
     
     /// <summary>
-    /// Field list for export
+    /// Filter by app id
+    /// <remarks>
+    /// When you use <see cref="AppId"/> and <see cref="SdkKey"/> filters simultaneously, you get data that meet at least one condition 
+    /// </remarks>
     /// </summary>
-    [QueryName("selectors")]
-    public IEnumerable<Selector> Selectors { get; init; } // TODO: Add ctor
+    [QueryCustomArray, QueryName("idApp")]
+    public ICollection<int> AppId { get; init; }
+    
+    /// <summary>
+    /// Filter by SDK keys
+    /// <remarks>
+    /// When you use <see cref="AppId"/> and <see cref="SdkKey"/> filters simultaneously, you get data that meet at least one condition 
+    /// </remarks>
+    /// </summary>
+    [QueryCustomArray, QueryName("SDKKey")]
+    public ICollection<int> SdkKey { get; init; }
+    
+    /// <summary>
+    /// Filter by account id
+    /// </summary>
+    [QueryName("idAccount")]
+    public ICollection<int> AccountId { get; init; }
+    
+    /// <summary>
+    /// Filter by tracking link id
+    /// </summary>
+    [QueryName("idAd")]
+    public ICollection<int> AdId { get; init; }
+    
+    /// <summary>
+    /// Filter by campaign id
+    /// </summary>
+    [QueryName("idCampaign")]
+    public ICollection<int> CampaignId { get; init; } 
+    
+    /// <summary>
+    /// Filter by country id
+    /// </summary>
+    [QueryName("idCountry")]
+    public ICollection<Country> CountryId { get; init; }
+    
+    /// <summary>
+    /// Filter by project id
+    /// </summary>
+    [QueryName("idProject")]
+    public ICollection<int> ProjectId { get; init; }
+
+    /// <summary>
+    /// Event type, selectors and event - specific data
+    /// </summary>
+    public CreateEventBase<TSelector> ExportInformation { get; init; }
     
     /// <summary>
     /// Filter by date, from which the export begins
@@ -22,7 +103,7 @@ public sealed class CreateRequest
     /// </remarks>
     /// </summary>
     [QueryName("dateFrom")]
-    public DateOnly DateFrom { get; init; } // TODO: Add check & ctor
+    public DateOnly DateFrom { get; }
     
     /// <summary>
     /// Filter by date to which the export complete
@@ -32,7 +113,7 @@ public sealed class CreateRequest
     /// </remarks>
     /// </summary>
     [QueryName("dateTo")]
-    public DateOnly DateTo { get; init; } // TODO: Add check & ctor
+    public DateOnly DateTo { get; }
     
     /// <summary>
     /// Filter by event timestamp from which the export begins
@@ -41,7 +122,7 @@ public sealed class CreateRequest
     /// </remarks>
     /// </summary>
     [QueryName("tsFrom")]
-    public UnixTimestamp TimestampFrom { get; init; } // TODO: Add check & and ctor
+    public UnixTimestamp TimestampFrom { get; }
     
     /// <summary>
     /// Filter by event timestamp to which the export complete
@@ -50,7 +131,7 @@ public sealed class CreateRequest
     /// </remarks>
     /// </summary>
     [QueryName("tsTo")]
-    public UnixTimestamp TimestampTo { get; init; } // TODO: Add check & and ctor
+    public UnixTimestamp TimestampTo { get; }
     
     /// <summary>
     /// Filter by timestamp of event appearance in the system, from which the export begins
@@ -59,7 +140,7 @@ public sealed class CreateRequest
     /// </remarks>
     /// </summary>
     [QueryName("availabilityTsFrom")]
-    public UnixTimestamp AvailabilityTimestampFrom { get; init; } // TODO: Add check on set block
+    public UnixTimestamp AvailabilityTimestampFrom { get; } 
     
     /// <summary>
     /// Filter by timestamp of event appearance in the system to which the export complete
@@ -68,7 +149,7 @@ public sealed class CreateRequest
     /// </remarks>
     /// </summary>
     [QueryName("availabilityTsTo")]
-    public UnixTimestamp AvailabilityTimestampTo { get; init; } // TODO: Add check on set block
+    public UnixTimestamp AvailabilityTimestampTo { get; }
     
     /// <summary>
     /// indicates whether Jailbreak or root access has been detected on the device.
@@ -108,5 +189,5 @@ public sealed class CreateRequest
     /// Filter by partner id
     /// </summary>
     [QueryName("idPartner")]
-    public IEnumerable<int> PartnerId { get; init; }
+    public ICollection<int> PartnerId { get; init; }
 }

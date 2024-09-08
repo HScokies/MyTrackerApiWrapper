@@ -1,4 +1,4 @@
-﻿namespace MyTrackerApiWrapper.Dictionaries;
+﻿namespace MyTrackerApiWrapper.Enumerations.Dictionaries;
 
 public enum PurchaseType : byte
 {

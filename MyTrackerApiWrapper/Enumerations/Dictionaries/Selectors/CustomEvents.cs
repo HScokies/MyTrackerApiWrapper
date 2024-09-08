@@ -1,6 +1,6 @@
 ﻿using MyTrackerApiWrapper.Attributes;
 
-namespace MyTrackerApiWrapper.Dictionaries.Selectors;
+namespace MyTrackerApiWrapper.Enumerations.Dictionaries.Selectors;
 
 /// <summary>
 /// The list of <see cref="Event.CustomEvents"/> selectors

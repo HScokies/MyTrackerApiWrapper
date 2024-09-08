@@ -1,4 +1,6 @@
-﻿namespace MyTrackerApiWrapper.DataTypes;
+﻿using System;
+
+namespace MyTrackerApiWrapper.DataTypes;
 /// <summary>
 /// Represents a Unix timestamp in seconds
 /// </summary>
@@ -14,6 +16,7 @@ public readonly struct UnixTimestamp
     public UnixTimestamp(DateTime timestamp) : this((DateTimeOffset) timestamp)
     {
     }
+    
 
     public override string ToString()
     {
