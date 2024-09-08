@@ -9,19 +9,17 @@ namespace MyTrackerApiWrapper.Helpers;
 // TODO: Internal
 public sealed class UrlProvider
 {
-    public static Uri BuildUrl(string baseUrl, string path, ICollection<KeyValuePair<string, string>> query)
+    public static Uri BuildUrl(Uri baseUrl, string path, IEnumerable<KeyValuePair<string, string>> query)
     {
-        var url = baseUrl + path; // TODO: Remove
-        
-        return new UriBuilder(url)
+        return new UriBuilder(new Uri(baseUrl, path))
         {
             Query = QueryString.Create(query).ToString()
         }.Uri;
     }
     
-    public static string Encode(string url)
+    public static string Encode(Uri url)
     {
-        var encoded = HttpUtility.UrlEncode(url);
+        var encoded = HttpUtility.UrlEncode(url.ToString());
         return Regex.Replace(encoded, @"%[a-f0-9]{2}", match => match.Value.ToUpperInvariant());
     }
 }

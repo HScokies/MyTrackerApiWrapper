@@ -6,29 +6,36 @@ using System.Text;
 namespace MyTrackerApiWrapper.Helpers;
 
 // TODO: Internal
-public sealed class AuthenticationProvider : IDisposable
+public sealed class AuthorizationProvider : IDisposable
 {
+    private readonly int _userId;
     private readonly HMACSHA1 _sha1;
 
-    public AuthenticationProvider(string hashKey) : this(Encoding.UTF8.GetBytes(hashKey))
+    public AuthorizationProvider(string hashKey, int userId) : this(Encoding.UTF8.GetBytes(hashKey), userId)
     {
     }
 
-    public AuthenticationProvider(byte[] hashKey)
+    public AuthorizationProvider(byte[] hashKey, int userId)
     {
+        _userId = userId;
         _sha1 = new HMACSHA1(hashKey);
     }
-
-    public string CreateSignature(
+    
+    public string CreateAuthorizationHeader(HttpMethod method, Uri url)
+    {
+        return "AuthHMAC " + _userId + ":" + CreateSignature(method, url);
+    }
+    
+    private string CreateSignature(
         HttpMethod method,
-        string url
+        Uri url
     )
     {
         var baseline = Encoding.UTF8.GetBytes($"{GetMethodName(method)}&{UrlProvider.Encode(url)}&");
         var hash = _sha1.ComputeHash(baseline);
         return Convert.ToBase64String(hash);
     }
-
+    
     private static string GetMethodName(HttpMethod method) =>
         method.ToString().ToUpper();
 

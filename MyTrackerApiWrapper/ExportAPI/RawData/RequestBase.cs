@@ -13,11 +13,13 @@ namespace MyTrackerApiWrapper.ExportAPI.RawData;
 
 public abstract class RequestBase
 {
-    public ICollection<KeyValuePair<string, string>> ToQuery()
+    internal virtual string Path { get; }
+    
+    
+    public IEnumerable<KeyValuePair<string, string>> GetQuery()
     {
         var query = new List<KeyValuePair<string, string>>();
         HandleInstance(this, query);
-
         return query;
     }
 

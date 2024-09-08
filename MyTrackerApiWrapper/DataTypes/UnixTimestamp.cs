@@ -6,20 +6,23 @@ namespace MyTrackerApiWrapper.DataTypes;
 /// </summary>
 public readonly struct UnixTimestamp
 {
-    private readonly long _timestamp;
-
-    private UnixTimestamp(DateTimeOffset offset)
+    public readonly long Timestamp;
+    public readonly DateTime DateTime;
+    public UnixTimestamp(DateTime timestamp)
     {
-        _timestamp = offset.ToUnixTimeSeconds();
+        DateTime = timestamp;
+        Timestamp = ((DateTimeOffset)timestamp).ToUnixTimeSeconds();
     }
-    
-    public UnixTimestamp(DateTime timestamp) : this((DateTimeOffset) timestamp)
+
+    public UnixTimestamp(long timestamp)
     {
+        Timestamp = timestamp;
+        DateTime = DateTimeOffset.FromUnixTimeSeconds(timestamp).DateTime;
     }
     
 
     public override string ToString()
     {
-        return _timestamp.ToString();
+        return Timestamp.ToString();
     }
 }

@@ -10,7 +10,7 @@ namespace MyTrackerApiWrapper.ExportAPI.RawData.Create.Request;
 
 public class CreateRequest<TSelector> : RequestBase where TSelector : Enum
 {
-    private string Path => "/api/raw/v1/export/create.json";
+    internal override string Path => "/api/raw/v1/export/create.json";
 
     // todo: remove - internal
     public string GetPath() => Path;
