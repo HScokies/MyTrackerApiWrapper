@@ -1,11 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using MyTrackerApiWrapper.ExportAPI;
 using MyTrackerApiWrapper.ExportAPI.RawData;
 
 namespace MyTrackerApiWrapper.Helpers;
 
-public sealed class ApiClient
+public sealed class ApiClient : IDisposable
 {
     private readonly HttpClient _client;
     private readonly AuthorizationProvider _authorizationProvider;
@@ -41,5 +43,16 @@ public sealed class ApiClient
 
         var response = await _client.GetAsync(url.PathAndQuery);
         return await response.Content.Deserialize<TResult>();
+    }
+
+    public async Task<Stream> GetStreamAsync(FileRequestBase request)
+    {
+        return await _client.GetStreamAsync(request.Path);
+    }
+    
+    public void Dispose()
+    {
+        _client?.Dispose();
+        _authorizationProvider?.Dispose();
     }
 }
